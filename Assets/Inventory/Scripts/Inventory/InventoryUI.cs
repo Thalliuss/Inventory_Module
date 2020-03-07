@@ -25,8 +25,6 @@ public class InventoryUI : ObjectContainerArray
 
     public void ReArrange(string p_name, int p_index)
     {
-        print(p_name + p_index);
-
         var test = new List<ItemProperties>();
 
         for (int i = 0; i < player.inventory.Count; i++) 
@@ -48,14 +46,18 @@ public class InventoryUI : ObjectContainerArray
         {
             if (player.inventory[i] != null && player.inventory[i].name == p_name) 
             {
+                print(i + "  " + p_index);
+
                 test[p_index] = ScriptableObject.CreateInstance<ItemProperties>();
                 test[p_index].name = p_name;
                 test[p_index].Sprite = player.inventory[i].Sprite;
                 test[p_index].Amount = player.inventory[i].Amount;
                 test[p_index].MaxAmount = player.inventory[i].MaxAmount;
 
-                test.RemoveAt(i);
-                test.Insert(i, null);
+                if (player.inventory[p_index] == null) {
+                    test.RemoveAt(i);
+                    test.Insert(i, null);
+                } else test[i] = player.inventory[p_index];
             }
         }
         player.inventory = test;
