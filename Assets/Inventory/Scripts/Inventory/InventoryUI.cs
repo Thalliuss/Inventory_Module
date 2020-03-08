@@ -1,6 +1,4 @@
-﻿using DataManagement;
-using DragAndDrop;
-using System;
+﻿using DragAndDrop;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,8 +17,6 @@ public class InventoryUI : ObjectContainerArray
             Destroy(gameObject);
 
         Instance = this;
-
-        CreateSlots(player.GetInventory());
     }
 
     public void ReArrange(string p_name, int p_out, int p_in)
@@ -42,6 +38,7 @@ public class InventoryUI : ObjectContainerArray
             else test.Add(null);
         }
 
+
         test[p_out] = ScriptableObject.CreateInstance<ItemProperties>();
 
         test[p_out].UIIndex = p_out;
@@ -54,8 +51,11 @@ public class InventoryUI : ObjectContainerArray
             test.RemoveAt(p_in);
             test.Insert(p_in, null);
         } else {
-            //TODO FIX SWAP PLACES
-            test[p_out] = player.inventory[p_out];
+            test[p_in] = player.inventory[p_out];
+            test[p_in].UIIndex = p_in;
+
+            test[p_out] = player.inventory[p_in];
+            test[p_out].UIIndex = p_out;
         }
 
         player.inventory = test;

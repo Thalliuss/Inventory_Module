@@ -11,7 +11,8 @@ public class PlayerData : DataElement {
 	[Serializable]
 	public class ItemReference 
 	{
-		public string Name;
+		public int UIIndex;
+
 		public Sprite Sprite;
 		public int Amount;
 		public int MaxAmount;

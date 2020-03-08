@@ -41,8 +41,6 @@ public class Player : MonoBehaviour
             LoadInventory();
     }
 
-    private void Refresh() { _data = _dataReferences.FindElement<PlayerData>(_id); }
-
     public void SaveInventory()
     {
         _data.Inventory.Clear();
@@ -59,6 +57,8 @@ public class Player : MonoBehaviour
                 {
                     _data.Inventory[i] = _database[a];
 
+                    _data.ItemReferences[i].UIIndex = inventory[i].UIIndex;
+                    _data.ItemReferences[i].MaxAmount = inventory[i].MaxAmount;
                     _data.ItemReferences[i].Sprite = inventory[i].Sprite;
                     _data.ItemReferences[i].Amount = inventory[i].Amount;
                     _data.ItemReferences[i].MaxAmount = inventory[i].MaxAmount;
@@ -76,6 +76,7 @@ public class Player : MonoBehaviour
             {
                 inventory[i] = Instantiate(_data.Inventory[i] as ItemProperties);
 
+                inventory[i].UIIndex = _data.ItemReferences[i].UIIndex;
                 inventory[i].Sprite = _data.ItemReferences[i].Sprite;
                 inventory[i].Amount = _data.ItemReferences[i].Amount;
                 inventory[i].MaxAmount = _data.ItemReferences[i].MaxAmount;
@@ -90,12 +91,13 @@ public class Player : MonoBehaviour
     public List<ItemProperties> inventory = new List<ItemProperties>();
     [SerializeField] private List<ItemProperties> _database = new List<ItemProperties>();
 
-    private void Start()
+    private void Start() 
     {
         for (int i = 0; i < _inventorySize; i++)
             inventory.Add(null);
 
         Setup();
+        InventoryUI.Instance.UpdateInventory();
     }
 
     private void OnTriggerEnter(Collider other)

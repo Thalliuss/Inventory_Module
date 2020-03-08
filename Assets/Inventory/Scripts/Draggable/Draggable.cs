@@ -204,12 +204,6 @@ namespace DragAndDrop
                 if (other)
                 {
                     UnityEngine.Object o = obj;
-                    if (!readOnlySource)
-                    {
-                        SetObject(other.obj);
-                        if (other.obj != null && _slot != null)
-                            _slot.onSlot.Invoke();
-                    }
                     if (!readOnlyTarget)
                     {
                         other.SetObject(o);
