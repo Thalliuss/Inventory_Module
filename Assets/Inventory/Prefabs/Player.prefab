@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 400000}
   - component: {fileID: 423746945007768247}
   m_Layer: 0
-  m_Name: FPSController
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,5 +47,5 @@ MonoBehaviour:
   _inventorySize: 24
   inventory: []
   _database:
-  - {fileID: 11400000, guid: c1deec9666fc8e946972d702912f8c3c, type: 2}
-  - {fileID: 11400000, guid: 1727c77bdedc87e448e996982778a866, type: 2}
+  - {fileID: 11400000, guid: c0dff19af9ac46a4d988bf5412ca71cb, type: 2}
+  - {fileID: 11400000, guid: 5ef3a048f72b8234999f7d2cf130325a, type: 2}

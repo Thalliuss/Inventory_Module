@@ -1,10 +1,10 @@
 ﻿using DragAndDrop;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemUI : Draggable
+public class ItemUI : Draggable, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public Image image;
-
 
     public override void UpdateObject()
     {
@@ -16,7 +16,7 @@ public class ItemUI : Draggable
             image.sprite = item.Sprite;
 
             if (slot != null)
-                InventoryUI.Instance.ReArrange(obj.name, slot.index);
+                InventoryUI.Instance.ReArrange(obj.name, slot.index, item.UIIndex);
         }
 
         // turn off if it was null

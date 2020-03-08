@@ -138,7 +138,7 @@ public class Player : MonoBehaviour
     public void AddItem(GameObject t_item) 
     {
         InventoryUI t_inventoryHandler = InventoryUI.Instance;
-        ItemProperties t_itemData = t_item.GetComponent<Item>().itemData;
+        ItemProperties t_itemData = Instantiate(t_item.GetComponent<Item>().itemData) as ItemProperties;
 
         if (t_item == null) return;
 
@@ -150,11 +150,15 @@ public class Player : MonoBehaviour
                 SaveInventory();
                 return;
             }
+        }
 
+        for (int i = 0; i < _inventorySize; i++)
+        {
             if (inventory[i] == null)
             {
                 inventory[i] = t_itemData;
                 inventory[i].Amount++;
+                inventory[i].UIIndex = i;
 
                 t_inventoryHandler.UpdateInventory();
                 SaveInventory();

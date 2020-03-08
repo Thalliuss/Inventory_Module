@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 namespace DragAndDrop
@@ -30,6 +31,7 @@ namespace DragAndDrop
         }
 
         Canvas canvas;
+
 
         public void OnBeginDrag(PointerEventData eventData)
         {
@@ -161,6 +163,8 @@ namespace DragAndDrop
 
             if (canvas)
                 canvas.sortingOrder = 0;
+
+            InventoryUI.Instance.UpdateInventory();
         }
 
         // this avoids memory allocation each time we move while dragging
