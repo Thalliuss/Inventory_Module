@@ -18,15 +18,20 @@ namespace DataManagement
     public class SaveReferences
     {
         public Dropdown load;
-        public Button generateSave;
-        public Dropdown overrideSave;
+        public Dropdown save;
+
+        public Button saveButton;
+        public Button overrideButton;
+
         public List<string> saveData = new List<string>();
 
         public void Init()
         {
             if (saveData != null) saveData.Clear();
             if (load.options != null) load.options.Clear();
-            if (overrideSave.options != null) overrideSave.options.Clear();
+            if (save.options != null) save.options.Clear();
+
+            overrideButton.gameObject.SetActive(false);
 
             string t_path = Application.persistentDataPath + "/";
             List<string> t_data = new List<string>(Directory.GetDirectories(t_path));
@@ -57,11 +62,12 @@ namespace DataManagement
                 if (!t_data[i].Contains("Unity") && !t_data[i].Contains("temp"))
                 {
                     if (t_data[i] != DataManager.Instance.ID)
-                        overrideSave.options.Add(new Dropdown.OptionData(t_data[i]));
+                        save.options.Add(new Dropdown.OptionData(t_data[i]));
 
-                    else overrideSave.options.Add(new Dropdown.OptionData(DataManager.Instance.ID));
+                    else save.options.Add(new Dropdown.OptionData(DataManager.Instance.ID));
 
-                    overrideSave.RefreshShownValue();
+                    save.RefreshShownValue();
+                    overrideButton.gameObject.SetActive(true);
                 }
             }
         }

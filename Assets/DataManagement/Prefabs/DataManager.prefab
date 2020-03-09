@@ -43,9 +43,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f728d31dd96fa8c4592cbfc5d4df2785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _id: 
   encrypt: 0
   multipleSaves: 1
   _saveReferences:
     load: {fileID: 0}
-    save: {fileID: 0}
+    generateSave: {fileID: 0}
+    overrideSave: {fileID: 0}
     saveData: []

@@ -1,11 +1,10 @@
 using System;
-using System.Collections;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 
 namespace DataManagement
-{
+{  
     /// <copyright file="DataManager.cs">
     /// Copyright (c) 2019 All Rights Reserved
     /// </copyright>
@@ -22,9 +21,6 @@ namespace DataManagement
 
         [Header("Enable/Disable Encryption.")]
         public bool encrypt = false;
-
-        [Header("Enable/Disable Multiple Save Files."), SerializeField]
-        public bool multipleSaves = false;
 
         public SaveReferences SaveReferences => _saveReferences;
 
@@ -48,19 +44,7 @@ namespace DataManagement
 
             Instance = this;
 
-            if (!multipleSaves)
-            {
-                if (_saveReferences.generateSave != null)
-                    _saveReferences.generateSave.gameObject.SetActive(false);
-
-
-                if (_saveReferences.load != null)
-                    _saveReferences.load.gameObject.transform.parent.parent.gameObject.SetActive(false);
-            }
-            else
-            {
-                SaveReferences.Init();
-            }
+            SaveReferences.Init();
 
             Debug.Log(Application.persistentDataPath + "/");
         }
@@ -72,7 +56,6 @@ namespace DataManagement
             var t_root = new DirectoryInfo(t_path);
             var t_dir = t_root.GetDirectories().OrderByDescending(f => f.LastWriteTime).FirstOrDefault();
 
-            if (!multipleSaves) return "Autosave";
             if (t_dir.Name != "Unity") return t_dir.Name;
             else return null;
         }
@@ -86,9 +69,9 @@ namespace DataManagement
 
             //Build data down here 
 
-		    DataBuilder.BuildElementsOfType<ItemData>(t_sceneManager.DataReferences.SaveData);
             DataBuilder.BuildElementsOfType<PlayerData>(t_sceneManager.DataReferences.SaveData);
-            StartCoroutine(Reset());
+            DataBuilder.BuildElementsOfType<ItemData>(t_sceneManager.DataReferences.SaveData);
+            Reset();
         }
 
         public void Save()
@@ -142,7 +125,7 @@ namespace DataManagement
                 for (int i = 0; i < t_sceneManager.DataReferences.SaveData.info.Count; i++)
                     t_sceneManager.DataReferences.SaveData.info[i].Save();
 
-                StartCoroutine(Reset());
+                Reset();
             }
         }
         public void OverideSave(string p_input = null)
@@ -154,7 +137,7 @@ namespace DataManagement
                 {
                     ID = p_input;
                 }
-                else ID = SaveReferences.saveData[SaveReferences.overrideSave.value];
+                else ID = SaveReferences.saveData[SaveReferences.save.value];
 
                 SaveReferences.Init();
                 Debug.Log("Saving Data to: " + ID);
@@ -163,13 +146,12 @@ namespace DataManagement
                     t_sceneManager.DataReferences.SaveData.info[i].Save();
             }
 
-            StartCoroutine(Reset());
+            Reset();
         }
 
         public void Load()
         {
             ID = SaveReferences.saveData[SaveReferences.load.value];
-            Debug.Log(ID + "DEBUGGING");
 
             SceneManager t_sceneManager = SceneManager.Instance;
             if (t_sceneManager != null)
@@ -178,7 +160,7 @@ namespace DataManagement
             t_sceneManager.Reload();
         }
 
-        private IEnumerator Reset()
+        private void Reset()
         {
             if (ID != TempID)
             {
@@ -192,8 +174,6 @@ namespace DataManagement
                     for (uint a = 0; a < Directory.GetFiles(t_name).Length; a++)
                         File.Copy(Directory.GetFiles(t_name)[a], Directory.GetFiles(t_name)[a].Replace(ID, TempID), true);
                 }
-
-                yield return new WaitForSeconds(0.1f);
 
                 ID = TempID;
             }

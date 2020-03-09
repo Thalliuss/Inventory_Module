@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 114061130394079508}
   - component: {fileID: 114753835999815552}
   m_Layer: 5
-  m_Name: SquareSlotHighlight
+  m_Name: Slot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

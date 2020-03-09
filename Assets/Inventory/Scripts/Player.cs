@@ -1,8 +1,12 @@
 ﻿using DataManagement;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.SceneManagement;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
+
 
 public class Player : MonoBehaviour
 {
@@ -19,7 +23,9 @@ public class Player : MonoBehaviour
     [ContextMenu("Generate ID")]
     public void GenerateID()
     {
+        #if UNITY_EDITOR
         EditorSceneManager.MarkSceneDirty(gameObject.scene);
+        #endif
 
         _id = "";
         System.Random t_random = new System.Random();
@@ -120,6 +126,8 @@ public class Player : MonoBehaviour
             if (inventory[i] != null && inventory[i].name == t_itemData.name && inventory[i].Amount < inventory[i].MaxAmount)
             {
                 inventory[i].Amount++;
+
+                t_inventoryHandler.UpdateInventory();
                 SaveInventory();
                 return true;
             }
@@ -149,6 +157,8 @@ public class Player : MonoBehaviour
             if (inventory[i] != null && inventory[i].name == t_itemData.name && inventory[i].Amount < inventory[i].MaxAmount)
             {
                 inventory[i].Amount++;
+
+                t_inventoryHandler.UpdateInventory();
                 SaveInventory();
                 return;
             }

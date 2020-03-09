@@ -1,7 +1,10 @@
 using DataManagement;
 using System.Linq;
-using UnityEditor.SceneManagement;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
 
 public class Item : MonoBehaviour
 {
@@ -18,12 +21,15 @@ public class Item : MonoBehaviour
 	[ContextMenu("Generate ID")]
 	public void GenerateID()
 	{
+		#if UNITY_EDITOR
 		EditorSceneManager.MarkSceneDirty(gameObject.scene);
+		#endif
 
 		_id = "";
 		System.Random t_random = new System.Random();
 		const string t_chars = "AaBbCcDdErFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789";
 		_id = new string(Enumerable.Repeat(t_chars, 8).Select(s => s[t_random.Next(s.Length)]).ToArray());
+
 	}
 
 	private void Setup()
@@ -49,7 +55,7 @@ public class Item : MonoBehaviour
 		_alife = _data.Alife;
 	}
 
-	#endregion
+#endregion
 
 	[SerializeField] public ItemProperties itemData;
 
