@@ -46,6 +46,4 @@ MonoBehaviour:
   _id: Player
   _inventorySize: 24
   inventory: []
-  _database:
-  - {fileID: 11400000, guid: c0dff19af9ac46a4d988bf5412ca71cb, type: 2}
-  - {fileID: 11400000, guid: 5ef3a048f72b8234999f7d2cf130325a, type: 2}
+  _database: []

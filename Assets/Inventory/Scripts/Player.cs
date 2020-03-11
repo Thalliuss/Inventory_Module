@@ -55,7 +55,7 @@ public class Player : MonoBehaviour
         for (int i = 0; i < inventory.Count; i++)
         {
             _data.Inventory.Add(null);
-            _data.ItemReferences.Add(new PlayerData.ItemReference());
+            _data.ItemReferences.Add(new ItemProperties.References());
 
             for (int a = 0; a < _database.Count; a++)
             {
@@ -63,11 +63,13 @@ public class Player : MonoBehaviour
                 {
                     _data.Inventory[i] = _database[a];
 
-                    _data.ItemReferences[i].UIIndex = inventory[i].UIIndex;
-                    _data.ItemReferences[i].MaxAmount = inventory[i].MaxAmount;
-                    _data.ItemReferences[i].Sprite = inventory[i].Sprite;
-                    _data.ItemReferences[i].Amount = inventory[i].Amount;
-                    _data.ItemReferences[i].MaxAmount = inventory[i].MaxAmount;
+                    _data.ItemReferences[i].uiIndex = inventory[i].uiIndex;
+                    _data.ItemReferences[i].sprite = inventory[i].sprite;
+                    _data.ItemReferences[i].amount = inventory[i].amount;
+                    _data.ItemReferences[i].maxAmount = inventory[i].maxAmount;
+                    _data.ItemReferences[i].itemType = inventory[i].itemType;
+                    _data.ItemReferences[i].durability = inventory[i].durability;
+                    _data.ItemReferences[i].damage = inventory[i].damage;
                 }
             }
         }
@@ -82,10 +84,13 @@ public class Player : MonoBehaviour
             {
                 inventory[i] = Instantiate(_data.Inventory[i] as ItemProperties);
 
-                inventory[i].UIIndex = _data.ItemReferences[i].UIIndex;
-                inventory[i].Sprite = _data.ItemReferences[i].Sprite;
-                inventory[i].Amount = _data.ItemReferences[i].Amount;
-                inventory[i].MaxAmount = _data.ItemReferences[i].MaxAmount;
+                inventory[i].uiIndex = _data.ItemReferences[i].uiIndex;
+                inventory[i].sprite = _data.ItemReferences[i].sprite;
+                inventory[i].amount = _data.ItemReferences[i].amount;
+                inventory[i].maxAmount = _data.ItemReferences[i].maxAmount;
+                inventory[i].itemType = _data.ItemReferences[i].itemType;
+                inventory[i].durability = _data.ItemReferences[i].durability;
+                inventory[i].damage = _data.ItemReferences[i].damage;
             }
         }
     }
@@ -123,60 +128,25 @@ public class Player : MonoBehaviour
 
         for (int i = 0; i < _inventorySize; i++)
         {
-            if (inventory[i] != null && inventory[i].name == t_itemData.name && inventory[i].Amount < inventory[i].MaxAmount)
+            if (inventory[i] != null && inventory[i].name == t_itemData.name && inventory[i].amount < inventory[i].maxAmount)
             {
-                inventory[i].Amount++;
+                inventory[i].amount++;
 
                 t_inventoryHandler.UpdateInventory();
-                SaveInventory();
                 return true;
             }
 
             if (inventory[i] == null)
             {
                 inventory[i] = t_itemData;
-                inventory[i].Amount++;
+                inventory[i].amount++;
+                inventory[i].uiIndex = i;
 
                 t_inventoryHandler.UpdateInventory();
-                SaveInventory();
                 return true;
             }
         }
         return false;
-    }
-
-    public void AddItem(GameObject t_item) 
-    {
-        InventoryUI t_inventoryHandler = InventoryUI.Instance;
-        ItemProperties t_itemData = Instantiate(t_item.GetComponent<Item>().itemData) as ItemProperties;
-
-        if (t_item == null) return;
-
-        for (int i = 0; i < _inventorySize; i++)
-        {
-            if (inventory[i] != null && inventory[i].name == t_itemData.name && inventory[i].Amount < inventory[i].MaxAmount)
-            {
-                inventory[i].Amount++;
-
-                t_inventoryHandler.UpdateInventory();
-                SaveInventory();
-                return;
-            }
-        }
-
-        for (int i = 0; i < _inventorySize; i++)
-        {
-            if (inventory[i] == null)
-            {
-                inventory[i] = t_itemData;
-                inventory[i].Amount++;
-                inventory[i].UIIndex = i;
-
-                t_inventoryHandler.UpdateInventory();
-                SaveInventory();
-                return;
-            }
-        }
     }
 
     public ItemProperties[] GetInventory() { return inventory.ToArray(); }

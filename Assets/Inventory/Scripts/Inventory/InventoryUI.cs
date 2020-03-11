@@ -29,11 +29,14 @@ public class InventoryUI : ObjectContainerArray
             {
                 test.Add(ScriptableObject.CreateInstance<ItemProperties>());
 
-                test[i].UIIndex = player.inventory[i].UIIndex;
+                test[i].uiIndex = player.inventory[i].uiIndex;
                 test[i].name = player.inventory[i].name;
-                test[i].Sprite = player.inventory[i].Sprite;
-                test[i].Amount = player.inventory[i].Amount;
-                test[i].MaxAmount = player.inventory[i].MaxAmount;
+                test[i].sprite = player.inventory[i].sprite;
+                test[i].amount = player.inventory[i].amount;
+                test[i].maxAmount = player.inventory[i].maxAmount;
+                test[i].itemType = player.inventory[i].itemType;
+                test[i].durability = player.inventory[i].durability;
+                test[i].damage = player.inventory[i].damage;
             }
             else test.Add(null);
         }
@@ -41,21 +44,24 @@ public class InventoryUI : ObjectContainerArray
 
         test[p_out] = ScriptableObject.CreateInstance<ItemProperties>();
 
-        test[p_out].UIIndex = p_out;
+        test[p_out].uiIndex = p_out;
         test[p_out].name = player.inventory[p_in].name;
-        test[p_out].Sprite = player.inventory[p_in].Sprite;
-        test[p_out].Amount = player.inventory[p_in].Amount;
-        test[p_out].MaxAmount = player.inventory[p_in].MaxAmount;
+        test[p_out].sprite = player.inventory[p_in].sprite;
+        test[p_out].amount = player.inventory[p_in].amount;
+        test[p_out].maxAmount = player.inventory[p_in].maxAmount;
+        test[p_out].itemType = player.inventory[p_in].itemType;
+        test[p_out].durability = player.inventory[p_in].durability;
+        test[p_out].damage = player.inventory[p_in].damage;
 
         if (player.inventory[p_out] == null) {
             test.RemoveAt(p_in);
             test.Insert(p_in, null);
         } else {
             test[p_in] = player.inventory[p_out];
-            test[p_in].UIIndex = p_in;
+            test[p_in].uiIndex = p_in;
 
             test[p_out] = player.inventory[p_in];
-            test[p_out].UIIndex = p_out;
+            test[p_out].uiIndex = p_out;
         }
 
         player.inventory = test;
@@ -88,6 +94,7 @@ public class InventoryUI : ObjectContainerArray
                 Time.timeScale = 1;
             }
         }
+        player.SaveInventory();
     }
 
     private void UIHandler()

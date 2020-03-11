@@ -89,13 +89,13 @@ namespace DataManagement
         {
             for (int i = 0; i < SaveData.ids.Count; i++)
             {
-                if (SaveData.ids[i] == t_id && SaveData.types[i] == typeof(T).Name)
+                if (SaveData.ids[i] == t_id /*&& SaveData.types[i] == typeof(T).Name*/)
                 {
                     Debug.Log("Removing " + typeof(T).Name + ": " + t_id);
 
-                    SaveData.info.Remove(SaveData.info[i]);
-                    SaveData.ids.Remove(SaveData.ids[i]);
-                    SaveData.types.Remove(SaveData.types[i]);
+                    SaveData.info.RemoveAt(i);
+                    SaveData.ids.RemoveAt(i);
+                    SaveData.types.RemoveAt(i);
 
                     File.Delete(Application.persistentDataPath + "/" + DataManager.Instance.ID + "/" + SceneManager.Instance.DataReferences.ID + "/" + t_id + ".json");
                     Save();

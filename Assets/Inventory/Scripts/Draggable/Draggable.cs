@@ -76,6 +76,7 @@ namespace DragAndDrop
             // move the dragged object with the mouse
             if (dragging)
                 transform.position = eventData.position;
+            else return;
 
             // highlight squares that can receive this component?
             Slot slot = GetSlotUnderMouse();

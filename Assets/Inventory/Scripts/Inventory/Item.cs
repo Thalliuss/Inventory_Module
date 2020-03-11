@@ -1,6 +1,7 @@
 using DataManagement;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
@@ -16,13 +17,14 @@ public class Item : MonoBehaviour
 	private ItemData _data = null;
 
 	// The ID under wich this data will be saved.
-	[SerializeField] private string _id = "item";
+	[SerializeField] private string _id = "none";
 
 	[ContextMenu("Generate ID")]
 	public void GenerateID()
 	{
 		#if UNITY_EDITOR
-		EditorSceneManager.MarkSceneDirty(gameObject.scene);
+		if (!Application.isPlaying)
+			EditorSceneManager.MarkSceneDirty(gameObject.scene);
 		#endif
 
 		_id = "";
@@ -32,13 +34,17 @@ public class Item : MonoBehaviour
 
 	}
 
-	private void Setup()
+	public void Setup(string p_id)
 	{
+		if (p_id == "none") return;
+
+		_id = p_id;
+
 		_dataReferences = SceneManager.Instance.DataReferences;
 
-		_data = _dataReferences.FindElement<ItemData>(_id);
+		_data = _dataReferences.FindElement<ItemData>(p_id);
 		if (_data == null) {
-			_data = _dataReferences.AddElement<ItemData>(_id);
+			_data = _dataReferences.AddElement<ItemData>(p_id);
 			return;
 		}
 
@@ -47,33 +53,58 @@ public class Item : MonoBehaviour
 
 	public void SaveAlife()
 	{
-		_data.Alife = _alife;
+		_data.Alife = alife;
 		_data.Save();
 	}
 	public void LoadAlife()
 	{
-		_alife = _data.Alife;
+		alife = _data.Alife;
 	}
 
-#endregion
+	#endregion
 
 	[SerializeField] public ItemProperties itemData;
 
-    private bool _alife = true;
+	public bool munuallyPlaced = false;
+	public bool alife = true;
+
+	public SpriteRenderer sprite;
+	public Text text;
 
 	void Start()
 	{
-		Setup();
-		SaveAlife();
-		Dispose();
+		Setup(_id);
+		SetVisuals();
 	}
 
-	private void Dispose() { if (!_alife) Destroy(gameObject); }
+	public void SetVisuals() 
+	{
+		text.text = itemData.name.Replace("(Clone)", "");
+		sprite.sprite = itemData.sprite;
+	}
+
+	private void Update()
+	{
+		if (!alife)
+		{
+			Destroy(gameObject);
+
+			if (!munuallyPlaced) 
+			{
+				_dataReferences.RemoveElement<ItemData>(_id);
+				DropManager.Instance.RemoveDrop(_id);
+			}
+		}
+
+		transform.LookAt(FindObjectOfType<Player>().transform);
+	}
 
 	public void Kill() 
-	{ 
-		_alife = false;
-		Dispose();
+	{
+		alife = false;
 		SaveAlife();
 	}
+
+	public string GetID() { return _id; }
+	public void SetID(string p_input) { _id = p_input; }
 }

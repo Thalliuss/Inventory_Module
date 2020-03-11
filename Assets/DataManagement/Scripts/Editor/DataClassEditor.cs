@@ -25,14 +25,13 @@ namespace DataManagement
         static void Init()
         {
             DataClassEditor window =
-                (DataClassEditor)GetWindow(typeof(DataClassEditor));
+                (DataClassEditor)GetWindow(typeof(DataClassEditor), true);
         }
 
         [Serializable]
         public class ClassReferences
         {
             public string Name;
-            public string ID;
             public PropertyReferences[] Properties;
 
             [Serializable]
@@ -72,7 +71,7 @@ namespace DataManagement
                 List<string> t_temp = new List<string>();
                 for (int i = 0; i < classReferences.Properties.Length; i++)
                 {
-                    string t_data = "\tpublic void Save" + char.ToUpper(classReferences.Properties[i].Name[0]) + classReferences.Properties[i].Name.Substring(1) + "()\n" + "\t{\n" + "\t\t //TODO IMPLEMENT: Example, _data." + char.ToUpper(classReferences.Properties[i].Name[0]) + classReferences.Properties[i].Name.Substring(1) + " = " + char.ToUpper(classReferences.Properties[i].Name[0]) + classReferences.Properties[i].Name.Substring(1) + ";\n" + "\t\t_data.Save()\n;" + "\t}\n" +
+                    string t_data = "\tpublic void Save" + char.ToUpper(classReferences.Properties[i].Name[0]) + classReferences.Properties[i].Name.Substring(1) + "()\n" + "\t{\n" + "\t\t //TODO IMPLEMENT: Example, _data." + char.ToUpper(classReferences.Properties[i].Name[0]) + classReferences.Properties[i].Name.Substring(1) + " = " + char.ToUpper(classReferences.Properties[i].Name[0]) + classReferences.Properties[i].Name.Substring(1) + ";\n" + "\t\t_data.Save();\n" + "\t}\n" +
                                     "\tpublic void Load" + char.ToUpper(classReferences.Properties[i].Name[0]) + classReferences.Properties[i].Name.Substring(1) + "()\n" + "\t{\n" + "\t\t //TODO IMPLEMENT: Example, " + char.ToUpper(classReferences.Properties[i].Name[0]) + classReferences.Properties[i].Name.Substring(1) + " = _data." + char.ToUpper(classReferences.Properties[i].Name[0]) + classReferences.Properties[i].Name.Substring(1) + ";\n" + "\t}\n\n";
 
                     t_temp.Add(t_data);
@@ -167,13 +166,14 @@ namespace DataManagement
                                     ("\n") +
                                     ("\t// A reference too the data being saved in this class.\n\tprivate " + p_input + "Data" + " _data = null;\n") +
                                     ("\n") +
-                                    ("\t// The ID under wich this data will be saved.\n\t[SerializeField] private string _id = " + '"' + classReferences.ID + '"' + ";\n") +
+                                    ("\t// The ID under wich this data will be saved.\n\t[SerializeField] private string _id = " + '"' + "none" + '"' + ";\n") +
                                     ("\n") +
                                     ("\t[ContextMenu(" + '"' + "Generate ID" + '"' + ")]\n") +
                                     ("\tpublic void GenerateID()\n") +
                                     ("\t{\n") +
+                                    ("\t\tif (!Application.isPlaying)\n") +
                                     ("\t\t#if UNITY_EDITOR\n") +
-                                    ("\t\tEditorSceneManager.MarkSceneDirty(gameObject.scene);\n") +
+                                    ("\t\t\tEditorSceneManager.MarkSceneDirty(gameObject.scene);\n") +
                                     ("\t\t#endif\n") +
                                     ("\n") +
                                     ("\t\t_id = " + '"' + '"' + ";\n") +
@@ -182,8 +182,12 @@ namespace DataManagement
                                     ("\t\t_id = new string( Enumerable.Repeat(t_chars, 8).Select(s => s[t_random.Next(s.Length)]).ToArray());\n") +
                                     ("\t}\n") +
                                     ("\n") +
-                                    ("\tprivate void Setup()\n") +
+                                    ("\tpublic void Setup(string p_id)\n") +
                                     ("\t{\n") +
+                                    ("\tif (_id == " + '"' + "none" + '"' + ") return;\n") +
+                                    ("\n") +
+                                    ("\t_id = p_id;\n") +
+                                    ("\n") +
                                     ("\t\t_dataReferences = SceneManager.Instance.DataReferences;\n") +
                                     ("\n") +
                                     ("\t\t_data = _dataReferences.FindElement<" + p_input + "Data" + ">(_id);\n") +
@@ -201,7 +205,7 @@ namespace DataManagement
                                     ("\n") +
                                     ("\tvoid Start()\n") +
                                     ("\t{\n") +
-                                    ("\t\tSetup();\n") +
+                                    ("\t\tSetup(_id);\n") +
                                     ("\t}\n") +
                                     ("}");
 
@@ -213,7 +217,7 @@ namespace DataManagement
                 string[] lines = File.ReadAllLines(Application.dataPath + "/DataManagement/Scripts/Managers/DataManager.cs");
                 string allString = "";
 
-                lines[70] = "\n\t\t    DataBuilder.BuildElementsOfType<" + p_input + "Data" + ">(t_sceneManager.DataReferences.SaveData);";
+                lines[72] = "\n\t\t    DataBuilder.BuildElementsOfType<" + p_input + "Data" + ">(t_sceneManager.DataReferences.SaveData);";
 
                 for (int i = 0; i < lines.Length; i++)
                 {

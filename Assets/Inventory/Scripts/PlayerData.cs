@@ -8,17 +8,9 @@ public class PlayerData : DataElement {
 	public List<ItemProperties> Inventory { get => _inventory; set => _inventory = value; }
 	[SerializeField] private List<ItemProperties> _inventory;
 
-	[Serializable]
-	public class ItemReference 
-	{
-		public int UIIndex;
 
-		public Sprite Sprite;
-		public int Amount;
-		public int MaxAmount;
-	}
-	public List<ItemReference> ItemReferences { get => _itemReferences; set => _itemReferences = value; }
-	[SerializeField] private List<ItemReference> _itemReferences;
+	public List<ItemProperties.References> ItemReferences { get => _itemReferences; set => _itemReferences = value; }
+	[SerializeField] private List<ItemProperties.References> _itemReferences;
 
 	public PlayerData(string p_id) : base(p_id)
 	{
