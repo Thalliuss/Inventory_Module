@@ -98,11 +98,15 @@ public class Player : MonoBehaviour
 
     #endregion
 
+    [Header("UI"), 
+    SerializeField] private GameObject _popUp;
+
+    [Header("Properties"), 
+    SerializeField] private List<ItemProperties> _database = new List<ItemProperties>();
     [SerializeField] private int _inventorySize = 0;
     public List<ItemProperties> inventory = new List<ItemProperties>();
-    [SerializeField] private List<ItemProperties> _database = new List<ItemProperties>();
 
-    private void Start() 
+    private void Start()
     {
         for (int i = 0; i < _inventorySize; i++)
             inventory.Add(null);
@@ -111,16 +115,7 @@ public class Player : MonoBehaviour
         InventoryUI.Instance.UpdateInventory();
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.GetComponent<Item>() != null)
-        {
-            Item t_item = other.GetComponent<Item>();
-
-            if (AddItem(Instantiate(t_item.itemData) as ItemProperties)) 
-                t_item.Kill();
-        }
-    }
+    public ItemProperties[] GetInventory() { return inventory.ToArray(); }
 
     public bool AddItem(ItemProperties t_itemData)
     {
@@ -149,5 +144,31 @@ public class Player : MonoBehaviour
         return false;
     }
 
-    public ItemProperties[] GetInventory() { return inventory.ToArray(); }
+    private void PickUpHandler() 
+    {
+        RaycastHit t_hit;
+        Ray t_ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(t_ray, out t_hit)) {
+            Transform objectHit = t_hit.transform;
+
+            if (objectHit.GetComponent<Item>() != null && Vector3.Distance(transform.position, objectHit.position) < 3 && !InventoryUI.Instance.inventoryOpened)
+            {
+                _popUp.SetActive(true);
+
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    Item t_item = objectHit.GetComponent<Item>();
+
+                    if (AddItem(Instantiate(t_item.itemData) as ItemProperties))
+                        t_item.Kill();
+                }
+            } else _popUp.SetActive(false);
+        }
+    }
+
+    private void Update()
+    {
+        PickUpHandler();
+    }
 }

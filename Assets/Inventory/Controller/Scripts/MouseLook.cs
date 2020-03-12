@@ -13,7 +13,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public float MaximumX = 90F;
         public bool smooth;
         public float smoothTime = 5f;
-        public bool lockCursor = true;
+        public bool lockCursor = false;
 
 
         private Quaternion m_CharacterTargetRot;
@@ -25,9 +25,13 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_CameraTargetRot = camera.localRotation;
         }
 
-
         public void LookRotation(Transform character, Transform camera)
         {
+            if (lockCursor) 
+            {
+                return;
+            }
+
             float yRot = Input.GetAxis("Mouse X") * XSensitivity;
             float xRot = Input.GetAxis("Mouse Y") * YSensitivity;
 

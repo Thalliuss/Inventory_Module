@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class ItemUI : Draggable, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [SerializeField] private GameObject _item;
     [SerializeField] private Image _image;
     [SerializeField] private Text _text;
     [SerializeField] private GameObject _menu;
@@ -51,7 +50,7 @@ public class ItemUI : Draggable, IBeginDragHandler, IDragHandler, IEndDragHandle
 
     public void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Mouse0) || Input.GetKey(KeyCode.E))
+        if (Input.GetKeyUp(KeyCode.Mouse0) || Input.GetKey(KeyCode.I))
         {
             _menuOpened = false;
             _menu.gameObject.SetActive(_menuOpened);
@@ -86,35 +85,15 @@ public class ItemUI : Draggable, IBeginDragHandler, IDragHandler, IEndDragHandle
     {
         if (_player.inventory[slot.index].amount > 1) 
         {
-            GenerateItem();
+            _dropManager.GenerateItem(_itemUI);
             _player.inventory[slot.index].amount--;
             _inventoryUI.UpdateInventory();
 
             return;
         }
 
-        GenerateItem();
+        _dropManager.GenerateItem(_itemUI);
         _player.inventory[slot.index] = null;
         _inventoryUI.UpdateInventory();
-    }
-
-    private void GenerateItem() 
-    {
-        GameObject t_object;
-        Item t_item;
-
-        t_object = Instantiate(_item, new Vector3(_player.transform.position.x + 10, 1, _player.transform.position.z + 10), Quaternion.identity);
-        t_object.name = _itemUI.name.Replace("(Clone)", "");
-        t_item = t_object.GetComponent<Item>();
-        t_item.itemData = Instantiate(_itemUI);
-        t_item.itemData.amount = 0;
-        t_item.itemData.name = _itemUI.name.Replace("(Clone)", "");
-        t_item.GenerateID();
-        t_item.SetVisuals();
-
-        t_item.Setup(t_item.GetID());
-        t_item.SaveAlife();
-
-        _dropManager.SaveDrops(t_object);
     }
 }

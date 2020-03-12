@@ -18,6 +18,7 @@ public class Item : MonoBehaviour
 
 	// The ID under wich this data will be saved.
 	[SerializeField] private string _id = "none";
+	public string ID { get => _id; set => _id = value; }
 
 	[ContextMenu("Generate ID")]
 	public void GenerateID()
@@ -75,6 +76,7 @@ public class Item : MonoBehaviour
 	{
 		Setup(_id);
 		SetVisuals();
+		SaveAlife();
 	}
 
 	public void SetVisuals() 
@@ -83,28 +85,36 @@ public class Item : MonoBehaviour
 		sprite.sprite = itemData.sprite;
 	}
 
-	private void Update()
+	private void RotationHandler() 
+	{
+		var lookPos = FindObjectOfType<Player>().transform.position - transform.position;
+		lookPos.y = 0;
+		var rotation = Quaternion.LookRotation(lookPos);
+		transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 10);
+	}
+
+	private void DisposeHandler() 
 	{
 		if (!alife)
 		{
 			Destroy(gameObject);
 
-			if (!munuallyPlaced) 
+			if (!munuallyPlaced)
 			{
 				_dataReferences.RemoveElement<ItemData>(_id);
 				DropManager.Instance.RemoveDrop(_id);
 			}
 		}
-
-		transform.LookAt(FindObjectOfType<Player>().transform);
 	}
-
-	public void Kill() 
+	public void Kill()
 	{
 		alife = false;
 		SaveAlife();
 	}
 
-	public string GetID() { return _id; }
-	public void SetID(string p_input) { _id = p_input; }
+	private void Update()
+	{
+		DisposeHandler();
+		RotationHandler();
+	}
 }

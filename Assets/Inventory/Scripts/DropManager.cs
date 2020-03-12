@@ -1,10 +1,12 @@
 ﻿using DataManagement;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.SceneManagement;
 using UnityEngine;
+using System;
+
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
+
 
 public class DropManager : MonoBehaviour
 {
@@ -38,7 +40,7 @@ public class DropManager : MonoBehaviour
 	{
 		_dataReferences = SceneManager.Instance.DataReferences;
 
-		_data = _dataReferences.FindElement<DropManagerData>(_id);
+		_data = _dataReferences.FindElement<DropManagerData>(_id); 
 		if (_data == null)
 		{
 			_data = _dataReferences.AddElement<DropManagerData>(_id);
@@ -54,25 +56,24 @@ public class DropManager : MonoBehaviour
 
 		_data.Count++;
 		_data.Position.Add(p_input.transform.position);
-		_data.IDs.Add(p_input.GetComponent<Item>().GetID());
+		_data.IDs.Add(p_input.GetComponent<Item>().ID);
 		_data.ItemProperties.Add(null);
 		_data.ItemReferences.Add(new ItemProperties.References());
 
-		for (int i = 0; i < _data.Count; i++) 
+		for (int i = 0; i < _database.Length; i++) //2
 		{
-			for (int a = 0; a < _database.Length; a++)
+			if (t_properties.name.Replace("(Clone)", "") == _database[i].name)
 			{
-				if (p_input.name.Replace("(Clone)", "") == _database[a].name)
-				{
-					_data.ItemProperties[i] = _database[a];
+				print(t_properties.name);
 
-					_data.ItemReferences[i].amount = t_properties.amount;
-					_data.ItemReferences[i].maxAmount = t_properties.maxAmount;
-					_data.ItemReferences[i].sprite = t_properties.sprite;
-					_data.ItemReferences[i].itemType = t_properties.itemType;
-					_data.ItemReferences[i].damage = t_properties.damage;
-					_data.ItemReferences[i].durability = t_properties.durability;
-				}
+				_data.ItemProperties[_data.Count - 1] = _database[i];
+				_data.ItemReferences[_data.Count - 1].amount = t_properties.amount;
+				_data.ItemReferences[_data.Count - 1].maxAmount = t_properties.maxAmount;
+				_data.ItemReferences[_data.Count - 1].sprite = t_properties.sprite;
+				_data.ItemReferences[_data.Count - 1].itemType = t_properties.itemType;
+				_data.ItemReferences[_data.Count - 1].damage = t_properties.damage;
+				_data.ItemReferences[_data.Count - 1].durability = t_properties.durability;
+
 			}
 		}
 
@@ -89,9 +90,7 @@ public class DropManager : MonoBehaviour
 
 			Item t_item = t_object.GetComponent<Item>();
 
-			print(_data.IDs[i] + "   " + i);
-			//t_item.alife = _dataReferences.FindElement<ItemData>(_data.IDs[i]).Alife;
-			t_item.SetID(_data.IDs[i]);
+			t_item.ID = _data.IDs[i];
 
 			t_item.itemData = _data.ItemProperties[i];
 
@@ -102,6 +101,27 @@ public class DropManager : MonoBehaviour
 			t_item.itemData.damage = _data.ItemReferences[i].damage;
 			t_item.itemData.durability = _data.ItemReferences[i].durability;
 		}
+	}
+
+	public void GenerateItem(ItemProperties t_itemUI)
+	{
+		GameObject t_object;
+		Item t_item;
+		Transform t_transform = FindObjectOfType<Player>().transform;
+
+		t_object = Instantiate(_prefab, new Vector3(t_transform.position.x, t_transform.position.y - .5f, t_transform.position.z) + t_transform.TransformDirection(Vector3.forward * 3), Quaternion.identity);
+		t_object.name = t_itemUI.name.Replace("(Clone)", "");
+		t_item = t_object.GetComponent<Item>();
+		t_item.itemData = Instantiate(t_itemUI);
+		t_item.itemData.amount = 0;
+		t_item.itemData.name = t_itemUI.name.Replace("(Clone)", "");
+		t_item.GenerateID();
+		t_item.SetVisuals();
+
+		t_item.Setup(t_item.ID);
+		t_item.SaveAlife();
+
+		SaveDrops(t_object);
 	}
 
 	public void RemoveDrop(string p_id)
