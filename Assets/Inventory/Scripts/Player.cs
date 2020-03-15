@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System.Collections;
+using UnityStandardAssets.Characters.FirstPerson;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
@@ -45,6 +47,26 @@ public class Player : MonoBehaviour
 
         if (_data.Inventory.Count != 0)
             LoadInventory();
+
+        if(_data.Position != Vector3.zero)
+            LoadPosAndRot();
+    }
+
+    private void LoadPosAndRot() 
+    {
+        transform.SetPositionAndRotation(_data.Position, _data.Rotation);
+        _firstPersonController.InitializeMouseLook();
+    }
+
+    private IEnumerator SavePosAndRot()
+    {
+        while (true) 
+        {
+            yield return new WaitForSeconds(.5f);
+            _data.Position = transform.position;
+            _data.Rotation = transform.rotation;
+            _data.Save();
+        }
     }
 
     public void SaveInventory()
@@ -106,12 +128,18 @@ public class Player : MonoBehaviour
     [SerializeField] private int _inventorySize = 0;
     public List<ItemProperties> inventory = new List<ItemProperties>();
 
+    [Header("Controller"),
+    SerializeField]
+    private FirstPersonController _firstPersonController;
+
     private void Start()
     {
         for (int i = 0; i < _inventorySize; i++)
             inventory.Add(null);
 
         Setup();
+        StartCoroutine(SavePosAndRot());
+
         InventoryUI.Instance.UpdateInventory();
     }
 

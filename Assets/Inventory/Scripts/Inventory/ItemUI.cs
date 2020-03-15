@@ -50,7 +50,7 @@ public class ItemUI : Draggable, IBeginDragHandler, IDragHandler, IEndDragHandle
 
     public void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Mouse0) || Input.GetKey(KeyCode.I))
+        if (Input.GetKeyUp(KeyCode.Mouse0) || Input.GetKey(KeyCode.I) || Input.GetKeyUp(KeyCode.Mouse1))
         {
             _menuOpened = false;
             _menu.gameObject.SetActive(_menuOpened);

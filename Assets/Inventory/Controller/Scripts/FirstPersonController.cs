@@ -52,7 +52,13 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_NextStep = m_StepCycle/2f;
             m_Jumping = false;
             m_AudioSource = GetComponent<AudioSource>();
-			mouseLook.Init(transform , m_Camera.transform);
+
+            InitializeMouseLook();
+        }
+
+        public void InitializeMouseLook()
+        {
+            mouseLook.Init(transform, m_Camera.transform);
         }
 
 
