@@ -19,7 +19,7 @@ public class ItemProperties : ScriptableObject
 	public class References
 	{
 		[HideInInspector] public int uiIndex;
-		public int amount;
+		[HideInInspector] public int amount;
 
 		public ItemType itemType;
 

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 610f9875def46e94bb4ae4d36bc7e37d, type: 3}
   m_Name: Mana Potion
   m_EditorClassIdentifier: 
-  itemType: 2
   uiIndex: 0
   amount: 0
+  itemType: 2
   sprite: {fileID: 21300000, guid: 98d756bd19eba914baa8d32082a076e7, type: 3}
   maxAmount: 16
   damage: 0

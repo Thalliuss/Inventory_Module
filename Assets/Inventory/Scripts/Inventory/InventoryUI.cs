@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityStandardAssets.Characters.FirstPerson;
 
 public class InventoryUI : ObjectContainerArray
 {
@@ -10,15 +9,14 @@ public class InventoryUI : ObjectContainerArray
 
     public Player player;
 
-    public bool inventoryOpened = false;
+    private bool _inventoryOpened;
+
     private void Start()
     {
         if (Instance != null)
             Destroy(gameObject);
 
         Instance = this;
-
-        CreateSlots(player.GetInventory());
     }
 
     public void ReArrange(string p_name, int p_out, int p_in)
@@ -76,51 +74,51 @@ public class InventoryUI : ObjectContainerArray
 
         for (int i = 0; i < 2; i++) 
         {
-            inventoryOpened = !inventoryOpened;
+            _inventoryOpened = !_inventoryOpened;
 
             foreach (Transform child in transform)
-                child.gameObject.SetActive(inventoryOpened);
+                child.gameObject.SetActive(_inventoryOpened);
 
-            GetComponent<Image>().enabled = inventoryOpened;
+            GetComponent<Image>().enabled = _inventoryOpened;
 
 
-            /*Cursor.visible = inventoryOpened;
-            if (inventoryOpened)
+            Cursor.visible = _inventoryOpened;
+            if (_inventoryOpened)
             {
                 Cursor.lockState = CursorLockMode.None;
-                FindObjectOfType<FirstPersonController>().mouseLook.lockCursor = false;
+                Time.timeScale = 0;
             }
             else
             {
                 Cursor.lockState = CursorLockMode.Locked;
-                FindObjectOfType<FirstPersonController>().mouseLook.lockCursor = true;
-            }*/ 
+                Time.timeScale = 1;
+            }
         }
         player.SaveInventory();
     }
 
     private void UIHandler()
     {
-
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            inventoryOpened = !inventoryOpened;
+            _inventoryOpened = !_inventoryOpened;
 
             foreach (Transform child in transform)
-                child.gameObject.SetActive(inventoryOpened);
+                child.gameObject.SetActive(_inventoryOpened);
 
-            GetComponent<Image>().enabled = inventoryOpened;
+            GetComponent<Image>().enabled = _inventoryOpened;
 
-            Cursor.visible = inventoryOpened;
-            if (!inventoryOpened)
+
+            Cursor.visible = _inventoryOpened;
+            if (_inventoryOpened)
             {
-                FindObjectOfType<FirstPersonController>().mouseLook.lockCursor = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.lockState = CursorLockMode.None;
+                Time.timeScale = 0;
             }
             else
             {
-                FindObjectOfType<FirstPersonController>().mouseLook.lockCursor = true;
-                Cursor.lockState = CursorLockMode.None;
+                Cursor.lockState = CursorLockMode.Locked;
+                Time.timeScale = 1;
             }
         }
     }

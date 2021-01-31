@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.Collections;
-using UnityStandardAssets.Characters.FirstPerson;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
@@ -42,31 +41,17 @@ public class Player : MonoBehaviour
         _data = _dataReferences.FindElement<PlayerData>(_id);
         if (_data == null) {
             _data = _dataReferences.AddElement<PlayerData>(_id);
+            StartCoroutine(SavePlayer());
             return;
         }
 
         if (_data.Inventory.Count != 0)
             LoadInventory();
 
-        if(_data.Position != Vector3.zero)
-            LoadPosAndRot();
-    }
+        if (_data.Position != null && _data.Rotation != null)
+            LoadPlayer();
 
-    private void LoadPosAndRot() 
-    {
-        transform.SetPositionAndRotation(_data.Position, _data.Rotation);
-        _firstPersonController.InitializeMouseLook();
-    }
-
-    private IEnumerator SavePosAndRot()
-    {
-        while (true) 
-        {
-            yield return new WaitForSeconds(.5f);
-            _data.Position = transform.position;
-            _data.Rotation = transform.rotation;
-            _data.Save();
-        }
+        StartCoroutine(SavePlayer());
     }
 
     public void SaveInventory()
@@ -117,33 +102,54 @@ public class Player : MonoBehaviour
         }
     }
 
+    public IEnumerator SavePlayer() 
+    {
+        while (true) 
+        {
+            yield return new WaitForSeconds(1);
+
+            _data.Position = transform.position;
+            _data.Rotation = transform.eulerAngles;
+            _data.Save();
+        }
+    }
+    public void LoadPlayer()
+    {
+        CharacterController t_characterController = GetComponent<CharacterController>();
+
+        t_characterController.enabled = false;
+        transform.position = _data.Position;
+        transform.Rotate(_data.Rotation);
+        t_characterController.enabled = true;
+    }
 
     #endregion
 
-    [Header("UI"), 
-    SerializeField] private GameObject _popUp;
-
-    [Header("Properties"), 
-    SerializeField] private List<ItemProperties> _database = new List<ItemProperties>();
     [SerializeField] private int _inventorySize = 0;
     public List<ItemProperties> inventory = new List<ItemProperties>();
+    [SerializeField] private List<ItemProperties> _database = new List<ItemProperties>();
 
-    [Header("Controller"),
-    SerializeField]
-    private FirstPersonController _firstPersonController;
-
-    private void Start()
+    private void Start() 
     {
         for (int i = 0; i < _inventorySize; i++)
             inventory.Add(null);
 
         Setup();
-        StartCoroutine(SavePosAndRot());
-
         InventoryUI.Instance.UpdateInventory();
     }
 
-    public ItemProperties[] GetInventory() { return inventory.ToArray(); }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.GetComponent<Item>() != null)
+        {
+            Item t_item = other.GetComponent<Item>();
+
+            if (AddItem(Instantiate(t_item.itemData) as ItemProperties)) 
+            {
+                t_item.Kill();
+            }
+        }
+    }
 
     public bool AddItem(ItemProperties t_itemData)
     {
@@ -159,6 +165,9 @@ public class Player : MonoBehaviour
                 return true;
             }
 
+        }
+        for (int i = 0; i < _inventorySize; i++)
+        {
             if (inventory[i] == null)
             {
                 inventory[i] = t_itemData;
@@ -172,31 +181,5 @@ public class Player : MonoBehaviour
         return false;
     }
 
-    private void PickUpHandler() 
-    {
-        RaycastHit t_hit;
-        Ray t_ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(t_ray, out t_hit)) {
-            Transform objectHit = t_hit.transform;
-
-            if (objectHit.GetComponent<Item>() != null && Vector3.Distance(transform.position, objectHit.position) < 3 && !InventoryUI.Instance.inventoryOpened)
-            {
-                _popUp.SetActive(true);
-
-                if (Input.GetKeyDown(KeyCode.E))
-                {
-                    Item t_item = objectHit.GetComponent<Item>();
-
-                    if (AddItem(Instantiate(t_item.itemData) as ItemProperties))
-                        t_item.Kill();
-                }
-            } else _popUp.SetActive(false);
-        }
-    }
-
-    private void Update()
-    {
-        PickUpHandler();
-    }
+    public ItemProperties[] GetInventory() { return inventory.ToArray(); }
 }
